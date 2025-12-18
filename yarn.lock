@@ -604,6 +604,13 @@
     "@floating-ui/utils" "^0.2.10"
     vue-demi ">=0.13.0"
 
+"@iconify-json/heroicons@1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@iconify-json/heroicons/-/heroicons-1.2.3.tgz#041fe0d689535dddc51e97c8b692cdff792ac4b2"
+  integrity sha512-n+vmCEgTesRsOpp5AB5ILB6srsgsYK+bieoQBNlafvoEhjVXLq8nIGN4B0v/s4DUfa0dOrjwE/cKJgIKdJXOEg==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify/collections@^1.0.628":
   version "1.0.630"
   resolved "https://registry.yarnpkg.com/@iconify/collections/-/collections-1.0.630.tgz#e84a8993979b8891905a6260be0ec0e8ac72912c"
@@ -5101,7 +5108,7 @@ sass-embedded-win32-x64@1.97.0:
   resolved "https://registry.yarnpkg.com/sass-embedded-win32-x64/-/sass-embedded-win32-x64-1.97.0.tgz#8c9543e18e66a4bc09d1b8c8844e47043a0bf4aa"
   integrity sha512-mKIJGXxEl6OoWEoT4ee5OsBOfExla2ilY5J8tupVwSCxf/i3aOJNLm7ZzRWG9er2K3bC8aovgMisMIVGlBM5hw==
 
-sass-embedded@1.97.0:
+sass-embedded@^1.97.0:
   version "1.97.0"
   resolved "https://registry.yarnpkg.com/sass-embedded/-/sass-embedded-1.97.0.tgz#299bc23e189e6c6a706eb773039f3e582df16b14"
   integrity sha512-Unwu0MtlAt9hQGHutB2NJhwhPcxiJX99AI7PSz7W4lkikQg9S/HYFtgxtIjpTB4DW7sOYX2xnxvtU/nep9HXTA==

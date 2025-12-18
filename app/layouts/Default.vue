@@ -7,8 +7,10 @@
 	</div>
 </template>
 
-<style lang="scss">
+<style>
+	@reference "tailwindcss";
+
 	body {
-		@apply dark:bg-gray-900 bg-white
+		@apply dark:bg-gray-900 bg-white;
 	}
 </style>
