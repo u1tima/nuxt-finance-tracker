@@ -1,7 +1,23 @@
 <script setup lang="ts">
+	import type { ITransaction } from '@/interfaces/ITransaction';
 	import { transactionViewOptions } from '@@/constants';
 
+	const supabase = useSupabaseClient()
+
 	const selectedView = ref(transactionViewOptions[1])
+	const transactions = ref<ITransaction[]>([])
+
+	const { data, pending } = await useAsyncData('transactions', async () => {
+		const { data, error } = await supabase
+			.from('transactions')
+			.select()
+
+		if (error) return []
+
+		return data
+	})
+
+	transactions.value = data.value as ITransaction[]
 </script>
 
 <template>
@@ -35,5 +51,10 @@
 			   :amount="4000"
 			   :last-amount="4100"
 			   :loading="false" />
+	</section>
+	<section>
+		<Transaction v-for="transaction in transactions"
+					 :key="transaction.id"
+					 :transaction="transaction" />
 	</section>
 </template>
