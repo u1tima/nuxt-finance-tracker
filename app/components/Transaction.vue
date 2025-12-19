@@ -5,6 +5,12 @@
 		transaction: ITransaction
 	}>();
 
+	const emit = defineEmits(['deleted']);
+
+	const isLoading = ref(false)
+	const toast = useToast()
+	const supabase = useSupabaseClient()
+
 	const { currency } = useCurrency(props?.transaction?.amount)
 
 	const isIncome = computed(() => props.transaction.type === 'Income');
@@ -17,6 +23,31 @@
 		? 'text-green-600'
 		: 'text-red-600')
 
+	const deleteTransaction = async () => {
+		isLoading.value = true
+
+		try {
+			await supabase.from('transactions')
+				.delete()
+				.eq('id', props.transaction.id)
+
+			toast.add({
+				title: 'Transaction deleted',
+				icon: 'i-heroicons-check-circle',
+			})
+
+			emit('deleted', props.transaction.id)
+
+		} catch (error) {
+			toast.add({
+				title: 'Transaction deleted',
+				icon: 'i-heroicons-exclamation-circle',
+			})
+		} finally {
+			isLoading.value = false
+		}
+	}
+
 	const items = [
 		[
 			{
@@ -27,7 +58,7 @@
 			{
 				label: 'Delete',
 				icon: 'i-heroicons-trash-20-solid',
-				onSelect: () => console.log('Delete')
+				onSelect: deleteTransaction
 			}
 		]
 	]
@@ -55,7 +86,8 @@
 							   :popper="{ placement: 'bottom-start' }">
 					<UButton color="neutral"
 							 variant="ghost"
-							 trailing-icon="i-heroicons-ellipsis-horizontal" />
+							 trailing-icon="i-heroicons-ellipsis-horizontal"
+							 :loading="isLoading" />
 				</UDropdownMenu>
 			</div>
 		</div>
