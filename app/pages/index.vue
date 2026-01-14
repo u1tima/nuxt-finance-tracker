@@ -3,8 +3,8 @@
 	import { transactionViewOptions } from '@@/constants';
 
 	const selectedView = ref(transactionViewOptions[1])
-
 	const { transactions, isLoading, refresh: refreshTransactions } = useTransactions()
+	const isOpen = ref(false)
 
 	const incomeCount = computed(() => income.value.length);
 	const expenseCount = computed(() => expense.value.length)
@@ -74,10 +74,7 @@
 			</div>
 		</div>
 		<div>
-			<UButton icon="i-heroicons-plus-circle"
-					 color="neutral"
-					 variant="solid"
-					 label="Add" />
+			<TransactionModal />
 		</div>
 	</section>
 	<section v-if="!isLoading">
