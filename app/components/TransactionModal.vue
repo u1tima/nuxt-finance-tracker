@@ -1,13 +1,46 @@
 <script lang="ts" setup>
+	import { z } from 'zod';
 	import { categories, types } from '~~/constants';
 
-	const state = ref({
-		type: "Income",
-		amount: 110,
+	const defaultSchema = z.object({
+		created_at: z.string(),
+		description: z.string().optional(),
+		amount: z.number().positive('Amount needs to be more than 0')
+	})
+
+	const incomeSchema = z.object({
+		type: z.literal('Income')
+	})
+	const expenseSchema = z.object({
+		type: z.literal('Expense'),
+		category: z.enum(categories)
+	})
+	const investmentSchema = z.object({
+		type: z.literal('Investment')
+	})
+	const savingSchema = z.object({
+		type: z.literal('Saving')
+	})
+
+	const schema = z.intersection(
+		z.discriminatedUnion('type', [incomeSchema, expenseSchema, investmentSchema, savingSchema]),
+		defaultSchema
+	)
+
+	type Schema = z.output<typeof schema>
+
+	const state = reactive<Partial<Schema>>({
+		type: undefined,
+		amount: undefined,
 		created_at: undefined,
 		description: undefined,
-		category: undefined
+		category: undefined,
+
 	})
+
+	const save = async () => {
+		// form.value.validate()
+	}
 </script>
 
 <template>
@@ -17,7 +50,9 @@
 				 variant="solid"
 				 label="Add" />
 		<template #body>
-			<UForm>
+			<UForm :state="state"
+				   :schema="schema"
+				   @submit.prevent="save">
 				<UFormField :required="true"
 							label="Transaction Type"
 							name="type"
@@ -57,7 +92,8 @@
 							label="Category"
 							name="category"
 							class="mb-4">
-					<USelect v-model="state.category"
+					<USelect v-if="state.type === 'Expense'"
+							 v-model="state.category"
 							 placeholder="Category"
 							 :items="categories"
 							 class="w-full" />
