@@ -29,22 +29,28 @@
 
 	type Schema = z.output<typeof schema>
 
-	const state = reactive<Partial<Schema>>({
+	const defaultState = {
 		type: undefined,
 		amount: undefined,
 		created_at: undefined,
 		description: undefined,
 		category: undefined,
+	}
 
+	const state = reactive<Partial<Schema>>({
+		...defaultState,
 	})
+	
+	const save = () => {}
 
-	const save = async () => {
-		// form.value.validate()
+	const resetForm = () => {
+		Object.assign(state, defaultState)
 	}
 </script>
 
 <template>
-	<UModal title="Add transaction">
+	<UModal title="Add transaction"
+			:close="{ onClick: () => resetForm() }">
 		<UButton icon="i-heroicons-plus-circle"
 				 color="neutral"
 				 variant="solid"
@@ -88,21 +94,23 @@
 							placeholder="Description"
 							class="w-full" />
 				</UFormField>
-				<UFormField :required="true"
+				<UFormField v-if="state.type === 'Expense'"
+							:required="true"
 							label="Category"
 							name="category"
 							class="mb-4">
-					<USelect v-if="state.type === 'Expense'"
-							 v-model="state.category"
+					<USelect v-model="state.category"
 							 placeholder="Category"
 							 :items="categories"
 							 class="w-full" />
 				</UFormField>
-				<UButton type="submit"
-						 color="neutral"
-						 variant="solid"
-						 label="Save" />
 			</UForm>
+		</template>
+		<template #footer>
+			<UButton type="submit"
+					 color="neutral"
+					 variant="solid"
+					 label="Save" />
 		</template>
 	</UModal>
 </template>
