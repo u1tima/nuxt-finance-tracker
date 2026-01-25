@@ -2,6 +2,16 @@
 	import { z } from 'zod';
 	import { categories, types } from '~~/constants';
 
+	const props = defineProps({
+		modelValue: Boolean
+	})
+
+	const emit = defineEmits(['update:modelValue', 'saved'])
+	
+	const isLoading = ref(false)
+	const supabase = useSupabaseClient()
+	const toast = useToast()
+
 	const defaultSchema = z.object({
 		created_at: z.string(),
 		description: z.string().optional(),
@@ -31,34 +41,68 @@
 
 	const defaultState = {
 		type: undefined,
-		amount: undefined,
-		created_at: undefined,
-		description: undefined,
-		category: undefined,
+		amount: 0,
+		created_at: '',
+		description: '',
+		category: '',
 	}
 
 	const state = reactive<Partial<Schema>>({
 		...defaultState,
 	})
-	
-	const save = () => {}
+
+	const save = async () => {
+		isLoading.value = true
+
+		try {
+			const { error } = await supabase
+				.from('transactions')
+				.upsert(state)
+
+			if (!error) {
+				toast.add({
+					'title': 'Transaction saved',
+					'icon': 'i-heroicons-check-circle'
+				});
+
+				emit('saved')
+			}
+
+			throw error
+		} catch (e) {
+			toast.add({
+				title: 'Transaction not saved',
+				description: e.message,
+				icon: 'i-heroicons-exclamation-circle',
+				color: 'error'
+			})
+		} finally {
+			isLoading.value = false
+			isOpen.value = false
+		}
+	}
 
 	const resetForm = () => {
 		Object.assign(state, defaultState)
 	}
+
+	const isOpen = computed({
+		get: () => props.modelValue,
+		set: (value) => {
+			if (!value) resetForm()
+			emit('update:modelValue', value)
+		}
+	});
+
 </script>
 
 <template>
-	<UModal title="Add transaction"
-			:close="{ onClick: () => resetForm() }">
-		<UButton icon="i-heroicons-plus-circle"
-				 color="neutral"
-				 variant="solid"
-				 label="Add" />
+	<UModal v-model:open="isOpen"
+			title="Add transaction">
 		<template #body>
 			<UForm :state="state"
 				   :schema="schema"
-				   @submit.prevent="save">
+				   @submit="save">
 				<UFormField :required="true"
 							label="Transaction Type"
 							name="type"
@@ -104,13 +148,11 @@
 							 :items="categories"
 							 class="w-full" />
 				</UFormField>
+				<UButton type="submit"
+						 color="neutral"
+						 variant="solid"
+						 label="Save" />
 			</UForm>
-		</template>
-		<template #footer>
-			<UButton type="submit"
-					 color="neutral"
-					 variant="solid"
-					 label="Save" />
 		</template>
 	</UModal>
 </template>

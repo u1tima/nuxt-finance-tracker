@@ -4,7 +4,7 @@
 
 	const selectedView = ref(transactionViewOptions[1])
 	const { transactions, isLoading, refresh: refreshTransactions } = useTransactions()
-	const isOpen = ref(false)
+	const isOpen = ref<boolean>(false)
 
 	const incomeCount = computed(() => income.value.length);
 	const expenseCount = computed(() => expense.value.length)
@@ -32,6 +32,10 @@
 
 		return grouped
 	})
+
+	const showModal = () => {
+		isOpen.value = true;
+	}
 </script>
 
 <template>
@@ -74,7 +78,13 @@
 			</div>
 		</div>
 		<div>
-			<TransactionModal />
+			<TransactionModal v-model="isOpen"
+							  @saved="refreshTransactions()" />
+			<UButton icon="i-heroicons-plus-circle"
+					 color="neutral"
+					 variant="solid"
+					 label="Add"
+					 @click="showModal" />
 		</div>
 	</section>
 	<section v-if="!isLoading">
