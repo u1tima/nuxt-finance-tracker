@@ -7,7 +7,7 @@
 	})
 
 	const emit = defineEmits(['update:modelValue', 'saved'])
-	
+
 	const isLoading = ref(false)
 	const supabase = useSupabaseClient()
 	const toast = useToast()
@@ -57,7 +57,7 @@
 		try {
 			const { error } = await supabase
 				.from('transactions')
-				.upsert(state)
+				.upsert({ ...state })
 
 			if (!error) {
 				toast.add({

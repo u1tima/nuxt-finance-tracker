@@ -1,37 +1,12 @@
 <script setup lang="ts">
-	import type { ITransaction } from '@/interfaces/ITransaction';
 	import { transactionViewOptions } from '@@/constants';
 
-	const selectedView = ref(transactionViewOptions[1])
 	const { transactions, isLoading, refresh: refreshTransactions } = useTransactions()
+	const { groupedTransactionsByDate } = useGroupedTransactionsByDate(transactions)
+	const { incomeCount, incomeTotal, expenseCount, expenseTotal } = useCountedTransactions(transactions)
+
+	const selectedView = ref(transactionViewOptions[1])
 	const isOpen = ref<boolean>(false)
-
-	const incomeCount = computed(() => income.value.length);
-	const expenseCount = computed(() => expense.value.length)
-	const income = computed(() => (transactions.value as ITransaction[]).filter(t => t.type === 'Income'));
-	const expense = computed(() => (transactions.value as ITransaction[]).filter(t => t.type === 'Expense'));
-	const incomeTotal = computed(() => income.value.reduce((sum, transaction) => sum + transaction.amount, 0));
-	const expenseTotal = computed(() => expense.value.reduce((sum, transaction) => sum + transaction.amount, 0));
-
-	const transactionsGroupedByDate = computed(() => {
-		if (!transactions.value) {
-			return;
-		}
-
-		let grouped: Record<string, ITransaction[]> = {}
-
-		for (const transaction of transactions.value) {
-			const date = new Date(transaction.created_at).toISOString().split('T')[0] as string;
-
-			if (!grouped[date]) {
-				grouped[date] = []
-			}
-
-			grouped[date].push(transaction)
-		}
-
-		return grouped
-	})
 
 	const showModal = () => {
 		isOpen.value = true;
@@ -88,7 +63,7 @@
 		</div>
 	</section>
 	<section v-if="!isLoading">
-		<div v-for="(transactionsOnDay, date) in transactionsGroupedByDate"
+		<div v-for="(transactionsOnDay, date) in groupedTransactionsByDate"
 			 :key="date"
 			 class="mb-10">
 			<DailyTransactionSummary :date="date"

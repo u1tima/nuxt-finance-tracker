@@ -1,8 +1,38 @@
+<script setup>
+	const props = defineProps({
+		title: String,
+		amount: Number,
+		lastAmount: Number,
+		color: String,
+		loading: Boolean
+	})
+
+	const { currency } = useCurrency(props.amount)
+
+	const trendingUp = computed(() => props.amount >= props.lastAmount)
+	
+	const icon = computed(() =>
+		trendingUp.value
+			? 'i-heroicons-arrow-trending-up'
+			: 'i-heroicons-arrow-trending-down')
+
+	const percentageTrend = computed(() => {
+		if (props.amount === 0 || props.lastAmount === 0) return '∞%'
+
+		const bigger = Math.max(props.amount, props.lastAmount)
+		const lower = Math.min(props.amount, props.lastAmount)
+		const ratio = ((bigger - lower) / lower) * 100
+
+		return `${Math.ceil(ratio)}%`
+	})
+</script>
+
 <template>
 	<div>
 		<div class="font-bold"
 			 :class="[color]">
 			{{ title }}
+			{{ amount }}
 		</div>
 		<div class="text-2xl font-extrabold text-black dark:text-white mb-2">
 			<USkeleton class="h-8 w-full"
@@ -26,34 +56,6 @@
 		</div>
 	</div>
 </template>
-
-<script setup>
-	const props = defineProps({
-		title: String,
-		amount: Number,
-		lastAmount: Number,
-		color: String,
-		loading: Boolean
-	})
-	
-	const { currency } = useCurrency(props.amount)
-
-	const trendingUp = computed(() => props.amount >= props.lastAmount)
-	const icon = computed(() =>
-		trendingUp.value
-			? 'i-heroicons-arrow-trending-up'
-			: 'i-heroicons-arrow-trending-down')
-
-	const percentageTrend = computed(() => {
-		if (props.amount === 0 || props.lastAmount === 0) return '∞%'
-
-		const bigger = Math.max(props.amount, props.lastAmount)
-		const lower = Math.min(props.amount, props.lastAmount)
-		const ratio = ((bigger - lower) / lower) * 100
-
-		return `${Math.ceil(ratio)}%`
-	})
-</script>
 
 <style>
 	@reference 'tailwindcss';

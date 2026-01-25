@@ -10,12 +10,12 @@ export const useTransactions = () => {
 			.order('created_at', { ascending: false })
 
 		if (error) throw error
-		
-		return data as ITransaction[]
+
+		return data
 	})
 
 	return {
-		transactions: data,
+		transactions: data as Ref<ITransaction[]>,
 		isLoading: pending,
 		error,
 		refresh
